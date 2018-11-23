@@ -1,0 +1,209 @@
+MIME-Version: 1.0
+Date: Thu, 22 Nov 2018 09:07:51 +1300
+From: Jonathan Viney <jonathan.viney@gmail.com>
+Subject: Re: Project data
+Thread-Topic: Re: Project data
+To: Reenaben Chauhan <chau220@manukaumail.com>
+Cc: Tracy Atiga <tracy@absl.co.nz>, Mark De Jesus <markus@gloryleague.com>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html; charset="utf-8"
+
+<html>
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dutf-8">
+</head>
+<body>
+<div dir=3D"ltr">You're welcome.</div>
+<br>
+<div class=3D"gmail_quote">
+<div dir=3D"ltr">On Wed, Nov 21, 2018 at 6:33 PM Reenaben Chauhan &lt;<a hr=
+ef=3D"mailto:chau220@manukaumail.com">chau220@manukaumail.com</a>&gt; wrote=
+:<br>
+</div>
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex">
+<div>
+<div class=3D"m_-8025536660755622830WordSection1">
+<p class=3D"MsoNormal">Hi, Jonathan, thank you very much. Its really helpfu=
+l &nbsp;to me.&nbsp; If I need something more I will inform you. But know t=
+his one is very important for me. Thank you once gain.<u></u><u></u></p>
+<p class=3D"MsoNormal"><u></u>&nbsp;<u></u></p>
+<p class=3D"MsoNormal"><u></u>&nbsp;<u></u></p>
+<p class=3D"MsoNormal">Thank you,<u></u><u></u></p>
+<p class=3D"MsoNormal"><u></u>&nbsp;<u></u></p>
+<p class=3D"MsoNormal">Reena Chauhan<u></u><u></u></p>
+<p class=3D"MsoNormal"><u></u>&nbsp;<u></u></p>
+<p class=3D"MsoNormal"><u></u>&nbsp;<u></u></p>
+<p class=3D"MsoNormal"><u></u>&nbsp;<u></u></p>
+<p class=3D"MsoNormal"><u></u>&nbsp;<u></u></p>
+<p class=3D"MsoNormal">Sent from <a href=3D"https://go.microsoft.com/fwlink=
+/?LinkId=3D550986" target=3D"_blank">
+Mail</a> for Windows 10</p>
+<p class=3D"MsoNormal"><u></u>&nbsp;<u></u></p>
+</div>
+<hr style=3D"display:inline-block;width:98%">
+<div id=3D"m_-8025536660755622830divRplyFwdMsg" dir=3D"ltr"><font face=3D"C=
+alibri, sans-serif" style=3D"font-size:11pt" color=3D"#000000"><b>From:</b>=
+ Jonathan Viney &lt;<a href=3D"mailto:jonathan.viney@gmail.com" target=3D"_=
+blank">jonathan.viney@gmail.com</a>&gt;<br>
+<b>Sent:</b> Wednesday, November 21, 2018 4:40:14 PM<br>
+<b>To:</b> Reenaben Chauhan<br>
+<b>Cc:</b> Tracy Atiga; Mark De Jesus<br>
+<b>Subject:</b> Re: Project data</font>
+<div>&nbsp;</div>
+</div>
+<div>
+<div dir=3D"ltr">
+<div dir=3D"ltr">Hi Reena,
+<div><br>
+</div>
+<div>There are two fields on the `people` table that can provide age inform=
+ation.</div>
+<div>
+<ul>
+<li>`birthdate` (but not all people have birthdates filled in)</li><li>`com=
+puted_age_group`. This column contains an age group that is derived either =
+from their birthdate, or from the age group of the leagues the person plays=
+ in. It is either 'child', 'teen', 'adult', or 'unknown'. If you need more =
+accurate age values, ignore
+ this column and just use `birthdate`.</li></ul>
+<div>Here is the query you provided, with an age calculation included.</div=
+>
+<div><br>
+</div>
+<div>
+<div>select</div>
+<div>&nbsp; mixpanel_events.user_id,</div>
+<div>&nbsp; mixpanel_events.event_name,</div>
+<div>&nbsp; mixpanel_events.timestamp,</div>
+<div>&nbsp; people.birthdate,</div>
+<div>&nbsp; json_extract_scalar(data, &quot;$.properties['page']&quot;) as =
+page,</div>
+<div>&nbsp; json_extract_scalar(data, &quot;$.properties['$device']&quot;) =
+as device,</div>
+<div>&nbsp; json_extract_scalar(data, &quot;$.properties['$browser']&quot;)=
+ as browser,</div>
+<div>&nbsp; json_extract_scalar(data, &quot;$.properties['$region']&quot;) =
+as region,</div>
+<div>&nbsp; json_extract_scalar(data, &quot;$.properties['$city']&quot;) as=
+ city,</div>
+<div>&nbsp; json_extract_scalar(data, &quot;$.properties['mp_lib']&quot;) a=
+s web,</div>
+<div>&nbsp; json_extract_scalar(data, &quot;$.properties['$os']&quot;) as o=
+s,</div>
+<div>&nbsp; json_extract_scalar(data, &quot;$.properties['Event Type']&quot=
+;) as EventType,</div>
+<div>&nbsp; json_extract_scalar(data, &quot;$.properties['source']&quot;) a=
+s source,</div>
+<div>&nbsp; json_extract_scalar(data, &quot;$.properties['mp_country_code']=
+&quot;) as mp_country_code,</div>
+<div>&nbsp; people.computed_age_group,</div>
+<div>&nbsp; if(extract(dayofyear from people.birthdate) &lt; extract(dayofy=
+ear from people.birthdate),</div>
+<div>&nbsp; &nbsp; date_diff(current_date, cast(people.birthdate as date), =
+YEAR) - 1,</div>
+<div>&nbsp; &nbsp; date_diff(current_date, cast(people.birthdate as date), =
+YEAR)</div>
+<div>&nbsp; ) as age</div>
+<div>from `glory-league-a79d0.students_pg_1.mixpanel_events` mixpanel_event=
+s</div>
+<div>&nbsp; inner join `glory-league-a79d0.students_pg_1.people` people on =
+people.user_id =3D mixpanel_events.user_id</div>
+<div>where people.club_id =3D 25</div>
+<div><br>
+</div>
+<div>Let me know if you have any other questions.</div>
+<div><br>
+</div>
+<div>Thanks,</div>
+<div>-Jonathan.</div>
+</div>
+</div>
+</div>
+</div>
+<br>
+<div class=3D"gmail_quote">
+<div dir=3D"ltr">On Wed, Nov 21, 2018 at 10:22 AM Reenaben Chauhan &lt;<a h=
+ref=3D"mailto:chau220@manukaumail.com" target=3D"_blank">chau220@manukaumai=
+l.com</a>&gt; wrote:<br>
+</div>
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex">
+<div lang=3D"EN-US" link=3D"blue" vlink=3D"#954F72">
+<div class=3D"m_-8025536660755622830m_4233359451370266847WordSection1">
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt;color:black">Good Mo=
+rning Jonathan, I am working on correlation analysis, so I need age as per =
+my objectives (</span>User performance - analyzing both &quot;In App&quot; =
+and &quot;on court&quot; behaviors and it's relation to
+ each other ex. Does a 14-year-old use GL more than a 17-year-old?)<span st=
+yle=3D"font-size:12.0pt;color:black">. Please help me.
+<u></u><u></u></span></p>
+<p class=3D"MsoNormal"><u></u>&nbsp;<u></u></p>
+<div>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt;color:black">select<=
+u></u><u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt;color:black">&nbsp; =
+a1.user_id,<u></u><u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt;color:black">&nbsp; =
+a1.event_name,<u></u><u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt;color:black">&nbsp; =
+a1.timestamp,<u></u><u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt;color:black">&nbsp; =
+json_extract_scalar(data, &quot;$.properties['page']&quot;) as page,<u></u>=
+<u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt;color:black">&nbsp; =
+json_extract_scalar(data, &quot;$.properties['$device']&quot;) as device,<u=
+></u><u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt;color:black">&nbsp; =
+json_extract_scalar(data, &quot;$.properties['$browser']&quot;) as browser,=
+<u></u><u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt;color:black">&nbsp; =
+json_extract_scalar(data, &quot;$.properties['$region']&quot;) as region,<u=
+></u><u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt;color:black">&nbsp; =
+json_extract_scalar(data, &quot;$.properties['$city']&quot;) as city,<u></u=
+><u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt;color:black">&nbsp; =
+json_extract_scalar(data, &quot;$.properties['mp_lib']&quot;) as web,<u></u=
+><u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt;color:black">&nbsp; =
+json_extract_scalar(data, &quot;$.properties['$os']&quot;) as os,<u></u><u>=
+</u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt;color:black">&nbsp; =
+json_extract_scalar(data, &quot;$.properties['Event Type']&quot;) as EventT=
+ype,<u></u><u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt;color:black">&nbsp; =
+json_extract_scalar(data, &quot;$.properties['source']&quot;) as source,<u>=
+</u><u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt;color:black">&nbsp; =
+json_extract_scalar(data, &quot;$.properties['mp_country_code']&quot;) as m=
+p_country_code<u></u><u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt;color:black">from `g=
+lory-league-a79d0.students_pg_1.mixpanel_events` a1<u></u><u></u></span></p=
+>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt;color:black">JOIN `g=
+lory-league-a79d0.students_pg_1.people` a2<u></u><u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt;color:black">ON a1.u=
+ser_id =3Da2.user_id<u></u><u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:12.0pt;color:black">WHERE a=
+2.club_id =3D 25<u></u><u></u></span></p>
+</div>
+<p class=3D"MsoNormal"><u></u>&nbsp;<u></u></p>
+<p class=3D"MsoNormal"><u></u>&nbsp;<u></u></p>
+<p class=3D"MsoNormal">Thank you,</p>
+<p class=3D"MsoNormal">Reena Chauhan</p>
+<p class=3D"MsoNormal"><u></u>&nbsp;<u></u></p>
+<p class=3D"MsoNormal">Sent from <a href=3D"https://go.microsoft.com/fwlink=
+/?LinkId=3D550986" target=3D"_blank">
+Mail</a> for Windows 10</p>
+<p class=3D"MsoNormal"><u></u>&nbsp;<u></u></p>
+</div>
+</div>
+</blockquote>
+</div>
+</div>
+</div>
+</blockquote>
+</div>
+</body>
+</html>
